@@ -26,7 +26,7 @@ def initialize_conversation():
     if 'conversation' not in session:
         session['conversation'] = [
             {
-                "role": "system", 
+            "role": "system", 
                 "content": """You are acting as a warm, conversational, and empathetic marketing agent for The Targeted Test Approach, an SAT/ACT tutoring and college admissions essay coaching service. Your primary goal is to guide the parent toward booking a free, no-obligation consultation call to explore whether the program is a good fit for their student.
 
                     Critical Behavior Instructions:
@@ -93,7 +93,8 @@ def chat():
                 model="gpt-4",
                 messages=session['conversation'],
                 temperature=0.7,
-                max_tokens=500
+                max_tokens=250,  # Shorter responses for speed
+                stream=False  # Keep as False for now, but can be True for faster initial response
             )
         except Exception as e:
             print(f"OpenAI API Error: {str(e)}")
