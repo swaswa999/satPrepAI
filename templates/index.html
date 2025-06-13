@@ -66,9 +66,6 @@
                         <button onclick="document.getElementById('user-input').value = 'Yes, tell me more'; document.getElementById('send-button').click();" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
                             Yes, tell me more
                         </button>
-                        <button onclick="document.getElementById('user-input').value = 'How does this work?'; document.getElementById('send-button').click();" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
-                            How does this work?
-                        </button>
                     </div>
                 </div>
             </div>
@@ -132,72 +129,12 @@
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
             
-            // Show SMS CTA after assistant's message
-            if (role === 'assistant') {
-                showSmsCta();
-            }
+            // No SMS CTA needed
             
             return messageDiv;
         }
         
-        // Show SMS CTA after messages
-        function showSmsCta() {
-            // Remove any existing CTA
-            const existingCta = document.getElementById('sms-cta');
-            if (existingCta) {
-                existingCta.remove();
-            }
-            
-            // Create and show new CTA
-            const ctaDiv = document.createElement('div');
-            ctaDiv.id = 'sms-cta';
-            ctaDiv.className = 'message assistant-message mt-4';
-            ctaDiv.innerHTML = `
-                <div class="bg-blue-50 p-4 rounded-lg">
-                    <p class="font-medium mb-3">Want personalized tips sent directly to your phone?</p>
-                    <div class="flex items-center">
-                        <input type="tel" id="phone-number" placeholder="Enter your phone number" class="flex-1 p-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <button onclick="sendSms()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-r-lg transition-colors">
-                            Text Me
-                        </button>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-2">We'll send you free test-taking tips and strategies.</p>
-                </div>
-            `;
-            chatMessages.appendChild(ctaDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-        
-        // Handle SMS submission
-        function sendSms() {
-            const phoneNumber = document.getElementById('phone-number').value.trim();
-            if (!phoneNumber) {
-                alert('Please enter a valid phone number');
-                return;
-            }
-            
-            // Here you would typically send this to your backend
-            console.log('Sending SMS to:', phoneNumber);
-            
-            // Show success message
-            const successDiv = document.createElement('div');
-            successDiv.className = 'message assistant-message mt-2';
-            successDiv.innerHTML = `
-                <div class="bg-green-50 text-green-800 p-3 rounded-lg">
-                    <p>Great! We'll send you tips shortly. Reply STOP to opt out anytime.</p>
-                </div>
-            `;
-            
-            const ctaDiv = document.getElementById('sms-cta');
-            if (ctaDiv) {
-                ctaDiv.parentNode.insertBefore(successDiv, ctaDiv.nextSibling);
-                ctaDiv.remove();
-            } else {
-                chatMessages.appendChild(successDiv);
-            }
-            
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
+        // SMS functionality has been removed
         
         // Show typing indicator
         function showTypingIndicator() {

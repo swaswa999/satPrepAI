@@ -43,3 +43,6 @@ Thumbs.db
 
 # Local development
 instance/
+
+flask_session/*
+
