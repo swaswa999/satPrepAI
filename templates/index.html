@@ -53,18 +53,28 @@
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8 max-w-4xl">
         <h1 class="text-3xl font-bold text-center mb-6 text-blue-600">AI Chat with Memory</h1>
         
-        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden h-full flex flex-col">
             <!-- Chat messages container -->
-            <div id="chat-messages" class="p-4 overflow-y-auto chat-container">
-                <!-- Messages will be added here dynamically -->
+            <div id="chat-messages" class="p-4 overflow-y-auto chat-container flex-1">
+                <div class="message assistant-message">
+                    <p>Most kids fail standardized testing not because of difficulty but because of key tricks and strategies. Would you like to learn how to improve your score?</p>
+                    <div class="mt-4 flex space-x-2">
+                        <button onclick="document.getElementById('user-input').value = 'Yes, tell me more'; document.getElementById('send-button').click();" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                            Yes, tell me more
+                        </button>
+                        <button onclick="document.getElementById('user-input').value = 'How does this work?'; document.getElementById('send-button').click();" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
+                            How does this work?
+                        </button>
+                    </div>
+                </div>
             </div>
             
             <!-- Input area -->
-            <div class="border-t p-4 bg-gray-50">
+            <div class="border-t p-4 bg-white shadow-inner" id="input-container">
                 <div class="flex space-x-2">
                     <input 
                         type="text" 
@@ -81,10 +91,13 @@
                     </button>
                     <button 
                         id="clear-button" 
-                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg transition duration-200"
+                        class="bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 px-4 py-2 rounded-lg transition duration-200 flex items-center"
                         title="Clear conversation"
                     >
-                        🗑️
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Clear
                     </button>
                 </div>
             </div>
@@ -107,10 +120,83 @@
         function addMessage(role, content) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${role}-message`;
-            messageDiv.textContent = content;
+            
+            // Use innerHTML to render HTML content from the assistant
+            messageDiv.innerHTML = content;
+            
+            // Sanitize user input to prevent XSS
+            if (role === 'user') {
+                messageDiv.textContent = content;
+            }
+            
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Show SMS CTA after assistant's message
+            if (role === 'assistant') {
+                showSmsCta();
+            }
+            
             return messageDiv;
+        }
+        
+        // Show SMS CTA after messages
+        function showSmsCta() {
+            // Remove any existing CTA
+            const existingCta = document.getElementById('sms-cta');
+            if (existingCta) {
+                existingCta.remove();
+            }
+            
+            // Create and show new CTA
+            const ctaDiv = document.createElement('div');
+            ctaDiv.id = 'sms-cta';
+            ctaDiv.className = 'message assistant-message mt-4';
+            ctaDiv.innerHTML = `
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <p class="font-medium mb-3">Want personalized tips sent directly to your phone?</p>
+                    <div class="flex items-center">
+                        <input type="tel" id="phone-number" placeholder="Enter your phone number" class="flex-1 p-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button onclick="sendSms()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-r-lg transition-colors">
+                            Text Me
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">We'll send you free test-taking tips and strategies.</p>
+                </div>
+            `;
+            chatMessages.appendChild(ctaDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Handle SMS submission
+        function sendSms() {
+            const phoneNumber = document.getElementById('phone-number').value.trim();
+            if (!phoneNumber) {
+                alert('Please enter a valid phone number');
+                return;
+            }
+            
+            // Here you would typically send this to your backend
+            console.log('Sending SMS to:', phoneNumber);
+            
+            // Show success message
+            const successDiv = document.createElement('div');
+            successDiv.className = 'message assistant-message mt-2';
+            successDiv.innerHTML = `
+                <div class="bg-green-50 text-green-800 p-3 rounded-lg">
+                    <p>Great! We'll send you tips shortly. Reply STOP to opt out anytime.</p>
+                </div>
+            `;
+            
+            const ctaDiv = document.getElementById('sms-cta');
+            if (ctaDiv) {
+                ctaDiv.parentNode.insertBefore(successDiv, ctaDiv.nextSibling);
+                ctaDiv.remove();
+            } else {
+                chatMessages.appendChild(successDiv);
+            }
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
         
         // Show typing indicator
